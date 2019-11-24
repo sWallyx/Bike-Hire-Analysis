@@ -22,7 +22,17 @@ def readCSV(name):
 
 
 def createObjects(csvData):
+    """
+    Function name: createObjects
+    Description: Using the CSV file data, creates all bike objects with no duplicates.
+
+    Arguments: 
+        IN -- CSV data
+        OUT -- Bike Objects
+    """
+
     bikes = []
+
     # Get the number of records in the data
     for i in range(len(csvData.index)):
         # Create a temporal object
@@ -31,20 +41,24 @@ def createObjects(csvData):
         existingBike = checkIfExist(bikes, temporalBikeObject)
 
         if(not existingBike):
+            # Add new bike to list
             bikes.append(temporalBikeObject)
         else:
+            # If the bike exists add times to existing bike
             existingBike.setTimes(temporalBikeObject.getFirstArrival(),temporalBikeObject.getFirstDeparture())
 
     return bikes
 
-
-def printObjects(bikes):
-    print(" ++++ Check Objects ++++")
-    for bike in bikes:
-        print(bike.printObject())
-
-
 def checkIfExist(bikes, bikeToCheck):
+    """
+    Function name: checkIfExist
+    Description: Checks if the ID of the bike already exist in the object list.
+
+    Arguments: 
+        IN -- Bike list, bike object to check
+        OUT -- Bike object if exists, False if does not exist
+    """
+
     for bike in bikes:
         if bikeToCheck.id == bike.id:
             return bike
@@ -53,20 +67,42 @@ def checkIfExist(bikes, bikeToCheck):
 
 
 def orderObjectsByTime(bikeObjects):
+    """
+    Function name: orderObjectsByTime
+    Description: Calls the order function of each object.
+
+    Arguments: 
+        IN -- Bike list
+    """
+
     for bike in bikeObjects:
         bike.orderTimes()
 
 
 def calculateBikeAverageTimes(bikeObjects):
+    """
+    Function name: calculateBikeAverageTimes
+    Description: Calls the calculate average trip time.
+
+    Arguments: 
+        IN -- Bike list
+    """
+
     for bike in bikeObjects:
         bike.calculateAverageTime()
 
-def isNaN(num):
-    return num != num
-
 def showAverageTimeForBike(bikeObjects):
+    """
+    Function name: showAverageTimeForBike
+    Description: Shows the average trip time of each bike.
+
+    Arguments: 
+        IN -- Bike list
+    """
+
     for bike in bikeObjects:
         print("Bike: ", bike.id, " has a travel average time of: ", bike.averageTravelTime)
+
 
 # Get the data from the CSV
 csvData = readCSV("data/data.csv")
@@ -74,7 +110,7 @@ csvData = readCSV("data/data.csv")
 # Add data to bike objects
 bikeObjects = createObjects(csvData)
 
-# Order objects time => order type, ASC
+# Order objects time => order type, ASC and fix missing times
 orderObjectsByTime(bikeObjects)
 
 # Run the class function to calcule the travel average time
@@ -83,5 +119,4 @@ calculateBikeAverageTimes(bikeObjects)
 # Run the class function to calcule the travel average time
 showAverageTimeForBike(bikeObjects)
 
-# Print objects for debug
-# printObjects(bikeObjects)
+print("Program ended.")

@@ -1,68 +1,102 @@
 from datetime import datetime, timedelta
 from defaultParams import *
+from miscFunctions import checkNaNValue
 
 class Bike:
-    # Object init
+    
     def __init__(self, id, arrival, departure):
         self.id = id
         self.arrivalTime = []
         self.departureTime = []
         self.averageTravelTime = 0
-        if(arrival != arrival): arrival = DEFAULT_TIME_VALUE
+
+        arrival = checkNaNValue(arrival)
         self.arrivalTime.append(arrival)
 
-        if(departure != departure): departure = DEFAULT_TIME_VALUE
+        departure = checkNaNValue(departure)
         self.departureTime.append(departure)
 
-    # Add new times to the object from the records
     def setTimes(self, arrival, departure):
+        """
+        Adds arrival and departure times to the object
+
+        Arguments:
+            IN -- arrival {String}, departure {String}
+        """
+
         self.arrivalTime.append(arrival)
         self.departureTime.append(departure)
 
-    # Get first time only, for temporal objects
     def getFirstArrival(self):
+        """
+        Returns the first arrival time. It is used to reutilize temporal object, and not duplicate bikes.
+
+        Arguments:
+            OUT -- arrival {String}
+        """
+
         return self.arrivalTime[0]
 
-    # Get first time only, for temporal objects
     def getFirstDeparture(self):
+        """
+        Returns the first arrival time. It is used to reutilize temporal object, and not duplicate bikes.
+
+        Arguments:
+            OUT -- arrival {String}
+        """
+
         return self.departureTime[0]
 
-    # Function to print the object and check if everything is OK
     def printObject(self):
+        """
+        Prints the object for debug purpose, not used in the application
+        """
+
         print(self.id, self.arrivalTime, self.departureTime, self.averageTravelTime)
 
-    # Order both arrays by time
     def orderTimes(self):
+        """
+        Orders all times, arrival and departures as ASC. Then check for missing times.
+        """
+
         self.arrivalTime.sort()
         self.departureTime.sort()
 
         self.checkTimeList()
 
     def checkTimeList(self):
+        """
+        Checks if there are missing datetimes. If there are, it adds the default time value.
+        """
+
+        # Condition of a travel: Arrival > Departure; if false, fix the missing datetime record.
         if (self.arrivalTime[0] < self.departureTime[0]):
             self.departureTime.insert(0, DEFAULT_TIME_VALUE)
 
     def calculateAverageTime(self):
+        """
+        Call the update format function. And fill an array of travelTimes with the times of each trip.
+        """
         travelTimes = []
 
         self.updateTimeFormat()
 
         for i in range(len(self.arrivalTime)):
-            if(self.departureTime[i] != datetime.strptime(DEFAULT_TIME_VALUE, '%Y%m%dT%H:%M:%S')):
+            # If departure time maches with the default time. We dont need to calculate that trip, we dont know the real departure time
+            if(self.departureTime[i] != datetime.strptime(DEFAULT_TIME_VALUE, TIME_FORMAT)):
                 travelTimes.append(self.arrivalTime[i] - self.departureTime[i])
-
-        # print(travelTimes)
 
         self.averageTravelTime = sum(travelTimes, timedelta()) / len(travelTimes)
 
+        # Make the DateTime variable more user friendly
         self.averageTravelTime = str(self.averageTravelTime)
 
     def updateTimeFormat(self):
+        """
+        Update the format of the all time variables to Datetime from String
+        """
         for i in range(len(self.arrivalTime)):
-            self.arrivalTime[i] = datetime.strptime(self.arrivalTime[i], '%Y%m%dT%H:%M:%S')
+            self.arrivalTime[i] = datetime.strptime(self.arrivalTime[i], TIME_FORMAT)
 
         for i in range(len(self.departureTime)):
-            self.departureTime[i] = datetime.strptime(self.departureTime[i], '%Y%m%dT%H:%M:%S')
-    
-
-    
+            self.departureTime[i] = datetime.strptime(self.departureTime[i], TIME_FORMAT)
