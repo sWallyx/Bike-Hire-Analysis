@@ -4,22 +4,21 @@ import os
 import pandas as pd
 from bike import Bike
 
-
 def readCSV(name):
-    # Get the data from the CSV
-    data = pd.read_csv(name, header=None, encoding='utf-8-sig')
+    """
+    Function name: readCVS
+    Description: Using pandas reads the CSV, with no headers, indicated by param and returns it
 
-    print(data)
+    Arguments: 
+        IN -- route to CSV file
+        OUT -- data object
+    """
+    
+    CSVdata = pd.read_csv(name, header=None, encoding='utf-8-sig')
 
-    return data
+    # print(CSVdata)
 
-    # Get Data Lenght
-    # for i in range(len(data.index)):
-    #     # All except Id need to have a space in front
-    #     tmp = Product(data['Id'][i], checkAndReplace(data[' Name'][i]), checkAndReplace(data[' Brand'][i]), checkAndReplace(
-    #         data[' Retailer'][i]), checkAndReplace(data[' Price'][i]), checkAndReplace(data[' InStock'][i]))
-
-    #     products.append(tmp)
+    return CSVdata
 
 
 def createObjects(csvData):
@@ -27,14 +26,14 @@ def createObjects(csvData):
     # Get the number of records in the data
     for i in range(len(csvData.index)):
         # Create a temporal object
-        temp = Bike(csvData[1][i], csvData[2][i], csvData[3][i])
+        temporalBikeObject = Bike(csvData[1][i], csvData[2][i], csvData[3][i])
 
-        existingBike = checkIfExist(bikes, temp)
+        existingBike = checkIfExist(bikes, temporalBikeObject)
 
         if(not existingBike):
-            bikes.append(temp)
+            bikes.append(temporalBikeObject)
         else:
-            existingBike.setTimes(temp.getFirstArrival(), temp.getFirstDeparture())
+            existingBike.setTimes(temporalBikeObject.getFirstArrival(),temporalBikeObject.getFirstDeparture())
 
     return bikes
 
@@ -45,9 +44,9 @@ def printObjects(bikes):
         print(bike.printObject())
 
 
-def checkIfExist(bikes, checkBike):
+def checkIfExist(bikes, bikeToCheck):
     for bike in bikes:
-        if checkBike.id == bike.id:
+        if bikeToCheck.id == bike.id:
             return bike
 
     return False
@@ -57,12 +56,32 @@ def orderObjectsByTime(bikeObjects):
     for bike in bikeObjects:
         bike.orderTimes()
 
+
+def calculateBikeAverageTimes(bikeObjects):
+    for bike in bikeObjects:
+        bike.calculateAverageTime()
+
+def isNaN(num):
+    return num != num
+
+def showAverageTimeForBike(bikeObjects):
+    for bike in bikeObjects:
+        print("Bike: ", bike.id, " has a travel average time of: ", bike.averageTravelTime)
+
 # Get the data from the CSV
 csvData = readCSV("data/data.csv")
 
 # Add data to bike objects
 bikeObjects = createObjects(csvData)
 
+# Order objects time => order type, ASC
 orderObjectsByTime(bikeObjects)
 
-printObjects(bikeObjects)
+# Run the class function to calcule the travel average time
+calculateBikeAverageTimes(bikeObjects)
+
+# Run the class function to calcule the travel average time
+showAverageTimeForBike(bikeObjects)
+
+# Print objects for debug
+# printObjects(bikeObjects)
