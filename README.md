@@ -72,4 +72,4 @@ The list of optimizations the application could have:
 
 ## License
 
-MIT - License
+[MIT - License](LICENSE.md)
